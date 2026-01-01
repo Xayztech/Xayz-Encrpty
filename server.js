@@ -251,7 +251,7 @@ function getEncryptionConfig(type, customName, days) {
         stringEncoding: true,
         stringSplitting: 1.0,
         shuffle: true,
-        stack: true,
+        // stack: true,
         duplicateLiteralsRemoval: true,
         lock: { 
             selfDefending: true, 

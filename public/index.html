@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XΛYZ ENCRYPTOR v12 [SECURE]</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        body { 
+            background-color: #05000a; 
+            color: #e0e0e0; 
+            font-family: 'Segoe UI', monospace; 
+            overflow-x: hidden; 
+            user-select: none; /* Mencegah blok teks */
+            -webkit-user-select: none;
+        }
+        .glass { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(100, 100, 100, 0.2); }
+        .loader { width: 50px; height: 50px; border: 4px solid #333; border-top-color: #7000ff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        #kill-screen {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; color: red; z-index: 999999;
+            flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-[url('https://grainy-gradients.vercel.app/noise.svg')]">
+
+    <div id="kill-screen">
+        <h1 class="text-6xl font-black">SECURITY TRIGGERED</h1>
+        <p class="text-2xl mt-4">Bot / Debugger / Inspection Detected.</p>
+        <p class="text-sm text-gray-600 mt-2">IP BANNED PERMANENTLY.</p>
+    </div>
+
+    <div id="authPage" class="fixed inset-0 z-50 flex items-center justify-center bg-black">
+        <div class="glass p-8 w-96 rounded-xl border-t-4 border-purple-600 shadow-2xl">
+            <h1 class="text-5xl font-black mb-2 text-center tracking-tighter text-white">XΛYZ<span class="text-purple-600">.IO</span></h1>
+            <p class="text-center text-xs text-gray-500 mb-6 tracking-widest">ACTIVE</p>
+            <div class="flex mb-6 border-b border-gray-800">
+                <button onclick="authMode='login'; updateAuthUI()" id="tabLogin" class="flex-1 pb-2 text-purple-500 border-b-2 border-purple-600 font-bold">LOGIN</button>
+                <button onclick="authMode='signup'; updateAuthUI()" id="tabSignup" class="flex-1 pb-2 text-gray-500 hover:text-white">SIGNUP</button>
+            </div>
+            <input type="text" id="authUser" placeholder="Username" class="w-full bg-black/50 border border-gray-800 p-3 rounded mb-3 text-white focus:border-purple-600 outline-none">
+            <input type="password" id="authPass" placeholder="Password" class="w-full bg-black/50 border border-gray-800 p-3 rounded mb-4 text-white focus:border-purple-600 outline-none">
+            
+            <div class="flex justify-center mb-4">
+                <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-theme="dark"></div>
+            </div>
+
+            <button onclick="handleAuth()" class="w-full bg-purple-700 hover:bg-purple-600 text-white font-bold p-3 rounded transition-all">AUTHENTICATE</button>
+            <p id="authMsg" class="text-center text-red-500 text-xs mt-3"></p>
+        </div>
+    </div>
+
+    <div id="mainApp" class="hidden min-h-screen flex flex-col md:flex-row">
+        <div class="w-full md:w-64 bg-black/95 border-r border-gray-900 flex flex-col p-4">
+            <div class="text-2xl font-black text-white italic mb-8 border-b border-gray-900 pb-4">XΛYZ<span class="text-purple-600">v12</span></div>
+            <nav class="space-y-2">
+                <button onclick="showTab('encrypt')" class="w-full text-left p-3 rounded hover:bg-white/5 text-purple-400 font-bold border-l-2 border-purple-600 bg-purple-900/10"><i class="fas fa-code mr-2"></i> Encryptor</button>
+                <button onclick="showTab('history')" class="w-full text-left p-3 rounded hover:bg-white/5 text-gray-400"><i class="fas fa-history mr-2"></i> History</button>
+            </nav>
+            <div class="mt-auto pt-4 border-t border-gray-900">
+                <div class="text-xs text-gray-500 mb-2">User: <span id="displayUser" class="text-white font-bold">...</span></div>
+                <button onclick="logout()" class="w-full bg-red-900/20 text-red-500 p-2 rounded text-xs hover:bg-red-900/40">LOGOUT</button>
+            </div>
+        </div>
+
+        <div class="flex-1 p-4 md:p-8 relative overflow-y-auto h-screen">
+            <div id="loading" class="hidden absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center backdrop-blur-sm">
+                <div class="loader mb-4"></div>
+                <h2 class="text-3xl font-bold text-white">ENCRYPTING...</h2>
+                <div class="text-purple-500 text-xs tracking-widest mt-2 animate-pulse text-center">
+                    APPLYING GUARD PROTECTION<br>PLEASE WAIT
+                </div>
+            </div>
+
+            <div id="tabEncrypt" class="max-w-6xl mx-auto">
+                <header class="mb-6 flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-white">Encryption Suite</h2>
+                    <span class="text-xs bg-green-900/30 text-green-500 px-2 py-1 rounded border border-green-500/30">● System Connected</span>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass p-6 rounded-xl">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs text-purple-500 font-bold">SOURCE CODE</label>
+                            <input type="file" id="fileUp" class="hidden" onchange="handleFile(this)">
+                            <button onclick="document.getElementById('fileUp').click()" class="text-[10px] bg-white/5 hover:bg-white/10 px-3 py-1 text-gray-300 rounded"><i class="fas fa-upload mr-1"></i> UPLOAD</button>
+                        </div>
+                        <textarea id="codeIn" class="w-full h-80 bg-black/50 border border-gray-800 text-[11px] text-gray-300 font-mono p-4 rounded resize-none focus:outline-none focus:border-purple-600" placeholder="// Paste code here..."></textarea>
+                        
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="text-[10px] text-gray-500 block mb-1">PRESET</label>
+                                <select id="encType" class="w-full bg-black border border-gray-800 text-xs text-white p-2 rounded outline-none" onchange="toggleInputs()">
+                                    <option value="quantum">🚀 Quantum</option>
+                                    <option value="nebula">🌌 Nebula</option>
+                                    <option value="locked">⏰ Time Locked</option>
+                                    <option value="invisible">👻 Invisible</option>
+                                    <option value="siu">🧮 Siu Math</option>
+                                    <option value="china">🇨🇳 Mandarin</option>
+                                    <option value="arab">🇸🇦 Arabic</option>
+                                    <option value="custom">👤 Custom Name</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-gray-500 block mb-1">FORMAT</label>
+                                <select id="modType" class="w-full bg-black border border-gray-800 text-xs text-white p-2 rounded outline-none">
+                                    <option value="cjs">CommonJS</option>
+                                    <option value="esm">ES Module</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="daysBox" class="hidden mt-2"><input type="number" id="daysIn" class="w-full bg-black border border-gray-800 text-xs text-white p-2 rounded" placeholder="Days Active"></div>
+                        <div id="custBox" class="hidden mt-2"><input type="text" id="custIn" class="w-full bg-black border border-gray-800 text-xs text-white p-2 rounded" placeholder="Var Name e.g ハンサムXYCoolcraft"></div>
+
+                        <button onclick="encrypt()" class="w-full mt-6 bg-purple-700 hover:bg-purple-600 text-white font-bold py-3 rounded transition-all">ENCRYPT</button>
+                    </div>
+
+                    <div class="glass p-6 rounded-xl flex flex-col">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs text-green-500 font-bold">OUTPUT</label>
+                            <div class="flex gap-2">
+                                <button onclick="copyCode()" class="w-8 h-8 bg-white/5 flex items-center justify-center rounded text-gray-300 hover:bg-white/10"><i class="fas fa-copy"></i></button>
+                                <button onclick="dlCode()" class="w-8 h-8 bg-white/5 flex items-center justify-center rounded text-gray-300 hover:bg-white/10"><i class="fas fa-download"></i></button>
+                            </div>
+                        </div>
+                        <textarea id="codeOut" readonly class="flex-1 bg-black/80 border border-gray-800 text-[10px] text-green-500 font-mono p-4 rounded resize-none focus:outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabHistory" class="hidden max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-6">History</h2>
+                <div id="histList" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. OMEGA SENTINEL (CLIENT PROTECTION) - FULL VERSION ---
+        const OmegaSentinel = (() => {
+            function killBot() {
+                document.body.innerHTML = "";
+                document.getElementById('kill-screen').style.display = 'flex';
+                // Membuat browser error / crash
+                throw new Error("SECURITY VIOLATION");
+            }
+
+            function checkHeadless() {
+                // Cek Webdriver
+                if(navigator.webdriver) killBot();
+                // Cek User Agent mencurigakan
+                if(/HeadlessChrome|PhantomJS|Selenium|Puppeteer/.test(navigator.userAgent)) killBot();
+            }
+
+            function antiDebug() {
+                // Memblokir F12 dan kawan-kawan
+                document.addEventListener('contextmenu', e => e.preventDefault());
+                document.onkeydown = function(e) {
+                    if (e.keyCode == 123) return false; // F12
+                    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; 
+                    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; 
+                    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; 
+                    if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false;
+                }
+                
+                // Debugger Loop (Jika inspect element dibuka, browser akan hang)
+                setInterval(() => {
+                    const before = new Date().getTime();
+                    debugger; 
+                    const after = new Date().getTime();
+                    if (after - before > 100) {
+                        killBot(); // Langsung matikan jika terdeteksi inspect
+                    }
+                }, 1000);
+            }
+
+            return {
+                init: () => {
+                    checkHeadless();
+                    antiDebug();
+                    console.log("%c OMEGA SENTINEL ACTIVE ", "background: #7000ff; color: white; padding: 5px;");
+                }
+            };
+        })();
+
+        // Jalankan Proteksi
+        OmegaSentinel.init();
+
+        // --- 2. APP LOGIC (LOGIN, FETCH, ETC) ---
+        let authMode='login';
+        function updateAuthUI(){
+            document.getElementById('tabLogin').className=authMode==='login'?"flex-1 pb-2 text-purple-500 border-b-2 border-purple-600 font-bold":"flex-1 pb-2 text-gray-500 hover:text-white";
+            document.getElementById('tabSignup').className=authMode==='signup'?"flex-1 pb-2 text-purple-500 border-b-2 border-purple-600 font-bold":"flex-1 pb-2 text-gray-500 hover:text-white";
+        }
+        async function handleAuth(){
+            const u=document.getElementById('authUser').value,p=document.getElementById('authPass').value,msg=document.getElementById('authMsg');
+            // Recaptcha check
+            const token = grecaptcha.getResponse();
+            if(!token) { msg.innerText = "CAPTCHA Required"; return; }
+
+            const db=JSON.parse(localStorage.getItem('xayz_users')||'{}');
+            if(authMode==='signup'){
+                if(db[u]){msg.innerText="User exists";return;}
+                db[u]=p;localStorage.setItem('xayz_users',JSON.stringify(db));
+                alert('Created!');authMode='login';updateAuthUI();
+            }else{
+                if(db[u]===p){localStorage.setItem('xayz_cur',u);initApp(u);}else{msg.innerText="Invalid Credentials";}
+            }
+        }
+        function initApp(u){document.getElementById('authPage').classList.add('hidden');document.getElementById('mainApp').classList.remove('hidden');document.getElementById('displayUser').innerText=u;loadHist();}
+        function logout(){localStorage.removeItem('xayz_cur');location.reload();}
+        
+        if(localStorage.getItem('xayz_cur')) initApp(localStorage.getItem('xayz_cur'));
+
+        function showTab(id){
+            document.getElementById('tabEncrypt').classList.add('hidden');
+            document.getElementById('tabHistory').classList.add('hidden');
+            if(id==='encrypt')document.getElementById('tabEncrypt').classList.remove('hidden');
+            if(id==='history')document.getElementById('tabHistory').classList.remove('hidden');
+        }
+        function toggleInputs(){
+            const v=document.getElementById('encType').value;
+            document.getElementById('daysBox').classList.add('hidden');
+            document.getElementById('custBox').classList.add('hidden');
+            if(v==='locked')document.getElementById('daysBox').classList.remove('hidden');
+            if(v==='custom')document.getElementById('custBox').classList.remove('hidden');
+        }
+        function handleFile(i){const f=i.files[0];if(f){const r=new FileReader();r.onload=e=>document.getElementById('codeIn').value=e.target.result;r.readAsText(f);}}
+
+        // --- FUNGSI KIRIM KE BACKEND ---
+        async function encrypt() {
+            const code = document.getElementById('codeIn').value;
+            if(!code) return alert('Code is empty!');
+            document.getElementById('loading').classList.remove('hidden');
+
+            try {
+                const res = await fetch('/api/encrypt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        code: code,
+                        type: document.getElementById('encType').value,
+                        moduleType: document.getElementById('modType').value,
+                        days: document.getElementById('daysIn').value,
+                        customName: document.getElementById('custIn').value
+                    })
+                });
+
+                const data = await res.json();
+                document.getElementById('loading').classList.add('hidden');
+
+                if(data.error) {
+                    alert("SERVER ERROR: " + data.error);
+                } else {
+                    document.getElementById('codeOut').value = data.result;
+                    saveHist(document.getElementById('encType').value, data.result);
+                }
+            } catch(e) {
+                document.getElementById('loading').classList.add('hidden');
+                alert("CONNECTION ERROR: " + e.message);
+            }
+        }
+
+        function saveHist(t,r){
+            const h=JSON.parse(localStorage.getItem('xayz_hist')||'[]');
+            h.unshift({id:Date.now(), t:t.toUpperCase(), sz:r.length, r, date:new Date().toLocaleString()});
+            if(h.length>30)h.pop();localStorage.setItem('xayz_hist',JSON.stringify(h));loadHist();
+        }
+        function loadHist(){
+            const h=JSON.parse(localStorage.getItem('xayz_hist')||'[]');
+            const l=document.getElementById('histList');l.innerHTML=h.length?'':'<p class="text-gray-500">No logs.</p>';
+            h.forEach(x=>{
+                l.innerHTML+=`<div class="glass p-3 rounded flex justify-between items-center hover:bg-white/5"><div><span class="text-purple-500 font-bold text-xs">[${x.t}]</span> <span class="text-gray-500 text-xs">${x.date}</span></div><button onclick="document.getElementById('codeOut').value=\`${x.r.replace(/`/g,'\\`')}\`;showTab('encrypt')" class="text-xs bg-white/10 px-2 py-1 rounded">LOAD</button></div>`;
+            });
+        }
+        function copyCode(){const c=document.getElementById('codeOut').value;if(c){navigator.clipboard.writeText(c);alert('Copied');}}
+        function dlCode(){const c=document.getElementById('codeOut').value;if(!c)return;const b=new Blob([c],{type:'text/javascript'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='xayz-protected.js';a.click();}
+    </script>
+</body>
+</html>
